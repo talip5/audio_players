@@ -9,36 +9,18 @@ import 'dart:async';
 void main() {
   runApp(const MyApp());
 }
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyApp1(),
-    );
-  }
-}
-
-
-
-class MyApp1 extends StatefulWidget {
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp1> {
+class _MyAppState extends State<MyApp> {
 
   String song = '';
   int count = 0;
-  String zaman='';
-  String zamanText='Audio Player';
 
   Future<void> requestCameraPermission() async {
     final serviceStatus = await Permission.storage.isGranted;
@@ -65,23 +47,15 @@ class _MyAppState extends State<MyApp1> {
 
   write() async {
     var response = await http.get(Uri.parse(
-        'https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3'));
-    //var response = await http.get(Uri.parse('https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3'));
+        'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3'));
     //print(response.bodyBytes);
     Directory? tempDir = await getExternalStorageDirectory();
     String tempPath = tempDir!.path;
     //File file=File('$tempPath/deneme1.mp3');
     String path35 = '/storage/emulated/0/Download';
-    File file = File('$path35/deneme2.mp3');
+    File file = File('$path35/deneme1.mp3');
     await file.writeAsBytes(response.bodyBytes);
     print('Dosya kaydedildi.');
-  }
-
-  delete() async{
-    String path35 = '/storage/emulated/0/Download';
-    File file = File('$path35/deneme8.mp3');
-    file.deleteSync();
-    print('$file file deleted');
   }
 
   path() async {
@@ -149,37 +123,6 @@ class _MyAppState extends State<MyApp1> {
     print(audioPlayer.state);
   }
 
-
-  PlayerState? playerState;
-  stateEvent() async{
-   /* audioPlayer.onPlayerStateChanged.listen((PlayerState s) => {
-    print('Current player state: $s');
-        setState(()  playerState = s);
-  });*/
-    //audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
-    audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
-      print('Current player state: $s');
-      setState(() {
-        playerState=s;
-      });
-    });
-  }
-  List<String> songPlayList=[];
-  playList() async{
-    String playDir='/storage/emulated/0/Download';
-    Directory directoryPlay=Directory(playDir);
-    print(directoryPlay);
-    List listPlayList=directoryPlay.listSync();
-    listPlayList.forEach((element) {
-      if(element is File){
-        songPlayList.add(element.path);
-        print(element.path);
-      }
-    });
-    print(songPlayList[0]);
-   // int result = await audioPlayer.play(songPlayList[0], isLocal: true);
-  }
-
   playLocal() async {
     Directory? tempDir = await getExternalStorageDirectory();
     String tempPath = tempDir!.path;
@@ -197,27 +140,13 @@ class _MyAppState extends State<MyApp1> {
     //String localPath='/storage/emulated/0/Download/deneme1.mp3';
     //File file=File('$tempPath/deneme1.mp3');
     // int result = await audioPlayer.play(localPath, isLocal: true);
-   // int result = await audioPlayer.play(song, isLocal: true);
+    int result = await audioPlayer.play(song, isLocal: true);
     //time();
   }
 
   position() async {
     audioPlayer.onAudioPositionChanged.listen((Duration p) =>
     { print('Current position: $p')
-    });
-  }
-int currentIndex=0;
-  completionEvent() async{
-    int result = await audioPlayer.play(songPlayList[currentIndex], isLocal: true);
-    audioPlayer.onPlayerCompletion.listen((event) async{
-      if(currentIndex<songPlayList.length-1) {
-        print(songPlayList[currentIndex]);
-        currentIndex++;
-      await audioPlayer.play(songPlayList[currentIndex], isLocal: true);
-      }
-      else{
-        await audioPlayer.stop();
-      }
     });
   }
 
@@ -231,78 +160,58 @@ int currentIndex=0;
     //write();
     //deneme();
     //time();
-    //position();
-    playList();
-    //stateEvent();
-    //completionEvent();
-    //delete();
+    position();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MaterialApp(
+      title: 'player',
+      home: Scaffold(
         //key: _scaffoldKey,
         appBar: AppBar(
           title: Text(title),
         ),
         body: Center(
           child: Column(
-              children: [
-                ElevatedButton(onPressed:(){
-                  audioPlayer.onAudioPositionChanged.listen((Duration p) =>
-                  { print('Current position: $p'),
-                    print(p.toString()),
-                    zaman=p.inMilliseconds.toString()
-                  });
-                  final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
-                  setState(() {
-                    zamanText=zaman;
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text('SnackBar $zaman'),
-                      backgroundColor: Colors.lightGreen,
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  });
-                },
-                    child: Text('SnackBar')),
-              Text(zamanText),
-          Text('Current player state: $playerState'),
-          ElevatedButton(
-              onPressed: () {
-                playLocal();
-                //play();
-                //time();
-                print('Play');
+            children: [
+              ElevatedButton(onPressed:(){
+                final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text('Hello from ScaffoldMessenger')),
+                );
               },
-              child: Text('Play')
+                  child: Text('SnackBar')),
+              Text('Audio Players'),
+              ElevatedButton(
+                  onPressed: () {
+                    playLocal();
+                    //play();
+                    //time();
+                    print('Play');
+                  },
+                  child: Text('Play')
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    int result = await audioPlayer.pause();
+                    time();
+                    print('Pause');
+                  },
+                  child: Text('Pause')
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    int result = await audioPlayer.stop();
+                    // time();
+                    print('Stop');
+                  },
+                  child: Text('Stop')
+              ),
+            ],
           ),
-          ElevatedButton(
-              onPressed: () async {
-                int result = await audioPlayer.pause();
-                time();
-                print('Pause');
-              },
-              child: Text('Pause')
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                int result = await audioPlayer.stop();
-                // time();
-                print('Stop');
-              },
-              child: Text('Stop')
-          ),
-                ElevatedButton(
-                    onPressed: () async {
-                      completionEvent();
-                      print('Completion');
-                    },
-                    child: Text('Completion')
-                ),
-        ],
-      ),
-    ),
+        ),)
+      ,
     );
   }
 }

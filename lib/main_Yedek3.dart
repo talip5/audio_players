@@ -72,16 +72,15 @@ class _MyAppState extends State<MyApp1> {
     String tempPath = tempDir!.path;
     //File file=File('$tempPath/deneme1.mp3');
     String path35 = '/storage/emulated/0/Download';
-    File file = File('$path35/deneme2.mp3');
+    File file = File('$path35/deneme0.mp3');
     await file.writeAsBytes(response.bodyBytes);
     print('Dosya kaydedildi.');
   }
 
   delete() async{
     String path35 = '/storage/emulated/0/Download';
-    File file = File('$path35/deneme8.mp3');
+    File file = File('$path35/deneme2.mp3');
     file.deleteSync();
-    print('$file file deleted');
   }
 
   path() async {
@@ -152,7 +151,7 @@ class _MyAppState extends State<MyApp1> {
 
   PlayerState? playerState;
   stateEvent() async{
-   /* audioPlayer.onPlayerStateChanged.listen((PlayerState s) => {
+    /* audioPlayer.onPlayerStateChanged.listen((PlayerState s) => {
     print('Current player state: $s');
         setState(()  playerState = s);
   });*/
@@ -176,8 +175,8 @@ class _MyAppState extends State<MyApp1> {
         print(element.path);
       }
     });
-    print(songPlayList[0]);
-   // int result = await audioPlayer.play(songPlayList[0], isLocal: true);
+    print(songPlayList[8]);
+    // int result = await audioPlayer.play(songPlayList[0], isLocal: true);
   }
 
   playLocal() async {
@@ -197,7 +196,7 @@ class _MyAppState extends State<MyApp1> {
     //String localPath='/storage/emulated/0/Download/deneme1.mp3';
     //File file=File('$tempPath/deneme1.mp3');
     // int result = await audioPlayer.play(localPath, isLocal: true);
-   // int result = await audioPlayer.play(song, isLocal: true);
+    // int result = await audioPlayer.play(song, isLocal: true);
     //time();
   }
 
@@ -206,18 +205,16 @@ class _MyAppState extends State<MyApp1> {
     { print('Current position: $p')
     });
   }
-int currentIndex=0;
+
   completionEvent() async{
-    int result = await audioPlayer.play(songPlayList[currentIndex], isLocal: true);
-    audioPlayer.onPlayerCompletion.listen((event) async{
-      if(currentIndex<songPlayList.length-1) {
-        print(songPlayList[currentIndex]);
-        currentIndex++;
-      await audioPlayer.play(songPlayList[currentIndex], isLocal: true);
-      }
-      else{
-        await audioPlayer.stop();
-      }
+    int result = await audioPlayer.play(songPlayList[8], isLocal: true);
+    audioPlayer.onPlayerCompletion.listen((event) {
+      print('completion');
+      //   onComplete();
+      //   setState(() {
+      //     position = duration;
+      //   });
+      // });
     });
   }
 
@@ -232,77 +229,69 @@ int currentIndex=0;
     //deneme();
     //time();
     //position();
-    playList();
+    //playList();
     //stateEvent();
     //completionEvent();
-    //delete();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Center(
-          child: Column(
-              children: [
-                ElevatedButton(onPressed:(){
-                  audioPlayer.onAudioPositionChanged.listen((Duration p) =>
-                  { print('Current position: $p'),
-                    print(p.toString()),
-                    zaman=p.inMilliseconds.toString()
-                  });
-                  final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
-                  setState(() {
-                    zamanText=zaman;
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text('SnackBar $zaman'),
-                      backgroundColor: Colors.lightGreen,
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  });
-                },
-                    child: Text('SnackBar')),
-              Text(zamanText),
-          Text('Current player state: $playerState'),
-          ElevatedButton(
-              onPressed: () {
-                playLocal();
-                //play();
-                //time();
-                print('Play');
-              },
-              child: Text('Play')
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                int result = await audioPlayer.pause();
-                time();
-                print('Pause');
-              },
-              child: Text('Pause')
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                int result = await audioPlayer.stop();
-                // time();
-                print('Stop');
-              },
-              child: Text('Stop')
-          ),
-                ElevatedButton(
-                    onPressed: () async {
-                      completionEvent();
-                      print('Completion');
-                    },
-                    child: Text('Completion')
-                ),
-        ],
+      //key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(title),
       ),
-    ),
+      body: Center(
+        child: Column(
+          children: [
+            ElevatedButton(onPressed:(){
+              audioPlayer.onAudioPositionChanged.listen((Duration p) =>
+              { print('Current position: $p'),
+                print(p.toString()),
+                zaman=p.inMilliseconds.toString()
+              });
+              final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
+              setState(() {
+                zamanText=zaman;
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text('SnackBar $zaman'),
+                    backgroundColor: Colors.lightGreen,
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              });
+            },
+                child: Text('SnackBar')),
+            Text(zamanText),
+            Text('Current player state: $playerState'),
+            ElevatedButton(
+                onPressed: () {
+                  playLocal();
+                  //play();
+                  //time();
+                  print('Play');
+                },
+                child: Text('Play')
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  int result = await audioPlayer.pause();
+                  time();
+                  print('Pause');
+                },
+                child: Text('Pause')
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  int result = await audioPlayer.stop();
+                  // time();
+                  print('Stop');
+                },
+                child: Text('Stop')
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
